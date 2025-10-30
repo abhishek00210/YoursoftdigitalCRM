@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { 
   LayoutDashboard, 
-  FolderKanban, 
+  FolderKanban,
   FileText, 
   ShoppingCart, 
   Mail, 
@@ -9,23 +9,36 @@ import {
   Users, 
   ChevronRight,
   Menu,
-  X
+  X,
+  Circle,
+  Briefcase // <-- Icon for Projects
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
+// Updated navigation structure
 const navigationItems = [
   { title: "Dashboard", icon: LayoutDashboard, path: "/" },
-  { title: "Projects", icon: FolderKanban, path: "/projects" },
-  { title: "File Manager", icon: FileText, path: "/files" },
+  { 
+    title: "Client", 
+    icon: Users,
+    submenu: [
+      { title: "Client List", path: "/client-list" },
+      { title: "Client Contact List", path: "/client-contact-list" },
+    ] 
+  },
+  { title: "Projects", icon: Briefcase, path: "/projects" },
+  { title: "Kanban", icon: FolderKanban, path: "/kanban" },
+  { title: "File Manager", icon: FileText, path: "/FileManagerPage" }, // <-- This path is now correct
   { title: "Ecommerce", icon: ShoppingCart, path: "/ecommerce" },
-  { title: "Letter Box", icon: Mail, path: "/mailbox" },
+  { title: "Letter Box", icon: Mail, path: "/letterbox" },
   { title: "Chats", icon: MessageSquare, path: "/chats" },
   { title: "Users", icon: Users, path: "/users" },
 ];
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [clientSubmenuOpen, setClientSubmenuOpen] = useState(false);
 
   return (
     <aside 
@@ -62,22 +75,64 @@ export function Sidebar() {
             )}>
               General
             </p>
+            {/* Updated rendering for General section */}
             {navigationItems.slice(0, 2).map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground transition-all duration-200",
-                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                    isActive && "bg-sidebar-accent text-sidebar-accent-foreground font-medium",
-                    collapsed && "justify-center"
-                  )
-                }
-              >
-                <item.icon className="h-5 w-5 flex-shrink-0" />
-                {!collapsed && <span>{item.title}</span>}
-              </NavLink>
+              item.submenu ? (
+                <div key={item.title}>
+                  <button
+                    onClick={() => setClientSubmenuOpen(!clientSubmenuOpen)}
+                    className={cn(
+                      "flex items-center justify-between w-full gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground transition-all duration-200",
+                      "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                      collapsed && "justify-center"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      {!collapsed && <span>{item.title}</span>}
+                    </div>
+                    {!collapsed && (
+                      <ChevronRight className={cn("h-4 w-4 transition-transform", clientSubmenuOpen && "rotate-90")} />
+                    )}
+                  </button>
+                  {!collapsed && clientSubmenuOpen && (
+                    <div className="pl-9 space-y-1 mt-1">
+                      {item.submenu.map((subItem) => (
+                        <NavLink
+                          key={subItem.path}
+                          to={subItem.path}
+                          className={({ isActive }) =>
+                            cn(
+                              "flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground/80 transition-all duration-200",
+                              "hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
+                              isActive && "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                            )
+                          }
+                        >
+                          <Circle className="h-2 w-2 fill-current" />
+                          <span>{subItem.title}</span>
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    cn(
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground transition-all duration-200",
+                      "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                      isActive && "bg-sidebar-accent text-sidebar-accent-foreground font-medium",
+                      collapsed && "justify-center"
+                    )
+                  }
+                >
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  {!collapsed && <span>{item.title}</span>}
+                </NavLink>
+              )
             ))}
           </div>
 
@@ -88,6 +143,7 @@ export function Sidebar() {
             )}>
               Applications
             </p>
+            {/* This slice now correctly starts from "Projects" */}
             {navigationItems.slice(2).map((item) => (
               <NavLink
                 key={item.path}
