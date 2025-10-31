@@ -1,3 +1,5 @@
+// src/components/Sidebar.tsx
+
 import { NavLink } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -11,7 +13,8 @@ import {
   Menu,
   X,
   Circle,
-  Briefcase // <-- Icon for Projects
+  Briefcase,
+  CalendarDays // <-- Import new icon
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -29,7 +32,8 @@ const navigationItems = [
   },
   { title: "Projects", icon: Briefcase, path: "/projects" },
   { title: "Kanban", icon: FolderKanban, path: "/kanban" },
-  { title: "File Manager", icon: FileText, path: "/FileManagerPage" }, // <-- This path is now correct
+  { title: "File Manager", icon: FileText, path: "/filemanager" },
+  { title: "Bookings", icon: CalendarDays, path: "/bookings" }, // <-- Added Bookings
   { title: "Ecommerce", icon: ShoppingCart, path: "/ecommerce" },
   { title: "Letter Box", icon: Mail, path: "/letterbox" },
   { title: "Chats", icon: MessageSquare, path: "/chats" },
@@ -75,7 +79,7 @@ export function Sidebar() {
             )}>
               General
             </p>
-            {/* Updated rendering for General section */}
+            {/* General section */}
             {navigationItems.slice(0, 2).map((item) => (
               item.submenu ? (
                 <div key={item.title}>
@@ -143,7 +147,7 @@ export function Sidebar() {
             )}>
               Applications
             </p>
-            {/* This slice now correctly starts from "Projects" */}
+            {/* Applications section */}
             {navigationItems.slice(2).map((item) => (
               <NavLink
                 key={item.path}

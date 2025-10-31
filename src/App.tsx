@@ -14,7 +14,10 @@ import AddProjectPage from "./pages/AddProject";
 import KanbanPage from "./pages/Kanban";
 import AddClientPage from "./pages/AddClient";
 import LetterBoxPage from "./pages/LetterBoxPage";
-import FileManagerPage from "./pages/FileManagerPage"; 
+import FileManagerPage from "./pages/FileManagerPage";
+import LoginPage from "./pages/Login";
+import SignupPage from "./pages/Signup";
+import BookingPage from "./pages/Booking"; // <-- Import Booking page
 
 const queryClient = new QueryClient();
 
@@ -25,16 +28,23 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* App Routes */}
           <Route path="/" element={<Index />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/add" element={<AddProjectPage />} />
           <Route path="/client-list" element={<ClientListPage />} />
-          <Route path="/client-list/add" element={<AddClientPage />} /> 
+          <Route path="/client-list/add" element={<AddClientPage />} />
           <Route path="/client-contact-list" element={<ClientContactListPage />} />
           <Route path="/kanban" element={<KanbanPage />} />
-          <Route path="/letterbox" element={<LetterBoxPage />} /> 
-          <Route path="/filemanager" element={<FileManagerPage />} /> {/* <-- This route is now correct */}
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/letterbox" element={<LetterBoxPage />} />
+          <Route path="/filemanager" element={<FileManagerPage />} />
+          <Route path="/bookings" element={<BookingPage />} /> {/* <-- Add this route */}
+
+          {/* Auth Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+
+          {/* Catch-all */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
