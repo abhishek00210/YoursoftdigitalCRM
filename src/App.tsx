@@ -17,7 +17,8 @@ import LetterBoxPage from "./pages/LetterBoxPage";
 import FileManagerPage from "./pages/FileManagerPage";
 import LoginPage from "./pages/Login";
 import SignupPage from "./pages/Signup";
-import BookingPage from "./pages/Booking"; // <-- Import Booking page
+import BookingPage from "./pages/Booking"; 
+import InvoicePage from "./pages/Invoice";
 
 const queryClient = new QueryClient();
 
@@ -39,7 +40,7 @@ const App = () => (
           <Route path="/letterbox" element={<LetterBoxPage />} />
           <Route path="/filemanager" element={<FileManagerPage />} />
           <Route path="/bookings" element={<BookingPage />} /> {/* <-- Add this route */}
-
+          <Route path="/invoice" element={<InvoicePage />} /> {/* <-- Add this route */}
           {/* Auth Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />

@@ -14,7 +14,8 @@ import {
   X,
   Circle,
   Briefcase,
-  CalendarDays // <-- Import new icon
+  CalendarDays,
+  Receipt // <-- Import new icon
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -33,7 +34,8 @@ const navigationItems = [
   { title: "Projects", icon: Briefcase, path: "/projects" },
   { title: "Kanban", icon: FolderKanban, path: "/kanban" },
   { title: "File Manager", icon: FileText, path: "/filemanager" },
-  { title: "Bookings", icon: CalendarDays, path: "/bookings" }, // <-- Added Bookings
+  { title: "Bookings", icon: CalendarDays, path: "/bookings" },
+  { title: "Invoice", icon: Receipt, path: "/invoice" }, // <-- Added Invoice
   { title: "Ecommerce", icon: ShoppingCart, path: "/ecommerce" },
   { title: "Letter Box", icon: Mail, path: "/letterbox" },
   { title: "Chats", icon: MessageSquare, path: "/chats" },
