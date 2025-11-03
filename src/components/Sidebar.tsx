@@ -15,7 +15,7 @@ import {
   Circle,
   Briefcase,
   CalendarDays,
-  Receipt // <-- Import new icon
+  Receipt
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -33,9 +33,9 @@ const navigationItems = [
   },
   { title: "Projects", icon: Briefcase, path: "/projects" },
   { title: "Kanban", icon: FolderKanban, path: "/kanban" },
-  { title: "File Manager", icon: FileText, path: "/filemanager" },
+  { title: "File Manager", icon: FileText, path: "/filemanager" }, // <-- Correct path
   { title: "Bookings", icon: CalendarDays, path: "/bookings" },
-  { title: "Invoice", icon: Receipt, path: "/invoice" }, // <-- Added Invoice
+  { title: "Invoice", icon: Receipt, path: "/invoice" },
   { title: "Ecommerce", icon: ShoppingCart, path: "/ecommerce" },
   { title: "Letter Box", icon: Mail, path: "/letterbox" },
   { title: "Chats", icon: MessageSquare, path: "/chats" },

@@ -1,5 +1,6 @@
 // src/pages/FileManager.tsx
 
+import React, { useRef } from "react"; // <-- Import useRef and React
 import { Sidebar } from "@/components/Sidebar";
 import { 
   Breadcrumb, 
@@ -48,7 +49,7 @@ import {
   List,
   HardDrive
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 // Dummy data for folders
 const folders = [
@@ -67,6 +68,27 @@ const recentFiles = [
 ];
 
 const FileManagerPage = () => {
+  // --- Additions for file upload ---
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => {
+    // Trigger the hidden file input
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // This is where you would handle the file upload logic
+      // (e.g., send to a server, add to state)
+      console.log("Selected file:", file.name, file.size);
+
+      // Reset the input value to allow uploading the same file again
+      event.target.value = '';
+    }
+  };
+  // --- End of additions ---
+
   return (
     <div className="flex min-h-screen w-full bg-background">
       <Sidebar />
@@ -117,10 +139,19 @@ const FileManagerPage = () => {
           
           {/* File Folders Sidebar */}
           <aside className="w-64 border-r border-border bg-card p-4 flex flex-col">
-            <Button size="lg" className="w-full">
+            {/* --- UPDATED BUTTON --- */}
+            <Button size="lg" className="w-full" onClick={handleUploadClick}>
               <Upload className="h-4 w-4 mr-2" />
               Upload File
             </Button>
+            {/* --- HIDDEN FILE INPUT --- */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden" // Tailwind class for display: none
+            />
+            
             <nav className="flex-1 mt-6 space-y-2">
               <Button variant="ghost" className="w-full justify-start text-base font-semibold bg-muted text-primary">
                 <HardDrive className="h-5 w-5 mr-3" />

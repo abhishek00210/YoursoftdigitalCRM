@@ -14,10 +14,10 @@ import AddProjectPage from "./pages/AddProject";
 import KanbanPage from "./pages/Kanban";
 import AddClientPage from "./pages/AddClient";
 import LetterBoxPage from "./pages/LetterBoxPage";
-import FileManagerPage from "./pages/FileManagerPage";
+import FileManagerPage from "./pages/FileManager";
 import LoginPage from "./pages/Login";
 import SignupPage from "./pages/Signup";
-import BookingPage from "./pages/Booking"; 
+import BookingPage from "./pages/Booking";
 import InvoicePage from "./pages/Invoice";
 
 const queryClient = new QueryClient();
@@ -38,9 +38,10 @@ const App = () => (
           <Route path="/client-contact-list" element={<ClientContactListPage />} />
           <Route path="/kanban" element={<KanbanPage />} />
           <Route path="/letterbox" element={<LetterBoxPage />} />
-          <Route path="/filemanager" element={<FileManagerPage />} />
-          <Route path="/bookings" element={<BookingPage />} /> {/* <-- Add this route */}
-          <Route path="/invoice" element={<InvoicePage />} /> {/* <-- Add this route */}
+          <Route path="/filemanager" element={<FileManagerPage />} /> {/* <-- Correct route */}
+          <Route path="/bookings" element={<BookingPage />} />
+          <Route path="/invoice" element={<InvoicePage />} />
+
           {/* Auth Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
