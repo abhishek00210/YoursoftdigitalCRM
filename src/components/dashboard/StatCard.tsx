@@ -13,7 +13,7 @@ interface StatCardProps {
 }
 
 export function StatCard({ 
-  title, 
+  title, // <-- Added this to match the interface
   value, 
   subtitle, 
   trend, 
@@ -33,6 +33,11 @@ export function StatCard({
     <Card className="p-6 hover:shadow-lg transition-all duration-300 border-border">
       <div className="flex items-start justify-between mb-4">
         <div>
+          {/* Note: Your interface has 'title', 'subtitle', and 'value'.
+            You are currently using 'subtitle' for the small text 
+            and 'value' for the large text. The 'title' prop is unused.
+            You may want to use {title} here instead of {subtitle}.
+          */}
           <p className="text-sm text-muted-foreground mb-1">{subtitle}</p>
           <h3 className="text-3xl font-bold text-foreground">{value}</h3>
         </div>

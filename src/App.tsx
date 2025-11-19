@@ -19,6 +19,8 @@ import LoginPage from "./pages/Login";
 import SignupPage from "./pages/Signup";
 import BookingPage from "./pages/Booking";
 import InvoicePage from "./pages/Invoice";
+import ExpensesPage from "./pages/Expenses";
+import EmployeePage from "./pages/Employee";  
 
 const queryClient = new QueryClient();
 
@@ -41,6 +43,8 @@ const App = () => (
           <Route path="/filemanager" element={<FileManagerPage />} /> {/* <-- Correct route */}
           <Route path="/bookings" element={<BookingPage />} />
           <Route path="/invoice" element={<InvoicePage />} />
+          <Route path="/expenses" element={<ExpensesPage />} />
+          <Route path="/employee" element={<EmployeePage />} />
 
           {/* Auth Routes */}
           <Route path="/login" element={<LoginPage />} />

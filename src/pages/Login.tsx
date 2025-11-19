@@ -1,5 +1,6 @@
 // src/pages/Login.tsx
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,16 +12,66 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast"; // <-- Import useToast
+import { Loader2 } from "lucide-react"; // <-- Import loader icon
+
+// Your .NET API's base URL
+// Make sure your .NET server is running on this address!
+const API_URL = "http://localhost:5123";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  // State for form fields
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add your login logic here
-    console.log("Login attempted");
-    // On successful login, navigate to the dashboard
-    navigate("/");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // SUCCESS
+        toast({
+          title: "Login Successful",
+          description: "Welcome back!",
+        });
+        // On successful login, navigate to the dashboard
+        navigate("/");
+      } else {
+        // ERROR
+        toast({
+          title: "Login Failed",
+          description: data || "Invalid email or password.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      // NETWORK ERROR
+      toast({
+        title: "Error",
+        description: "Could not connect to the server.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -46,6 +97,9 @@ const LoginPage = () => {
                 type="email"
                 placeholder="m@example.com"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -58,10 +112,17 @@ const LoginPage = () => {
                   Forgot password?
                 </NavLink>
               </div>
-              <Input id="password" type="password" required />
+              <Input 
+                id="password" 
+                type="password" 
+                required 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+              />
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Login"}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">

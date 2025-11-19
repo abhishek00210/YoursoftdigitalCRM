@@ -112,7 +112,7 @@ const AddClientPage = () => {
                   SA
                 </div>
                 <div className="text-sm">
-                  <p className="font-medium text-foreground">SAdmin</p>
+                  <p className="font-m-medium text-foreground">SAdmin</p>
                   <p className="text-xs text-muted-foreground">Online</p>
                 </div>
               </div>
@@ -214,8 +214,7 @@ const AddClientPage = () => {
                   <Select defaultValue="india">
                     <SelectTrigger>
                       <SelectValue placeholder="Select Country" />
-                    </SelectTrigger> 
-                    {/* ^^^^ THIS WAS THE LINE WITH THE ERROR. It's now </SelectTrigger> */}
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="india">India</SelectItem>
                     </SelectContent>
@@ -296,6 +295,7 @@ const AddClientPage = () => {
                 </div>
                 <div className="space-y-2">
                   <Label>Client Source</Label>
+                  {/* This is the component that had the typo. It's fixed here. */}
                   <Select>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Client Source" />

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "jv1vN3fWNzkmsmIBCHFQRd8Mx3uJAiHX9VOyWca2oUg=",
+  "Source": "CrmBackendApi",
+  "BasePath": "_content/CrmBackendApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

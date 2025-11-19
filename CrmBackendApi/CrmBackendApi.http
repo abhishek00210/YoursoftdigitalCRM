@@ -1,0 +1,6 @@
+@CrmBackendApi_HostAddress = http://localhost:5011
+
+GET {{CrmBackendApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
