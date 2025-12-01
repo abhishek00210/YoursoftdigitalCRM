@@ -1,6 +1,8 @@
 // Data/ApiDbContext.cs
 using CrmBackendApi.Models; 
 using Microsoft.EntityFrameworkCore;
+// We alias Task to avoid conflict with System.Threading.Tasks
+using Task = CrmBackendApi.Models.Task; 
 
 namespace CrmBackendApi.Data
 {
@@ -11,9 +13,21 @@ namespace CrmBackendApi.Data
         {
         }
 
+        // Standard tables
         public DbSet<Employee> Employees { get; set; }
         public DbSet<User> Users { get; set; } 
         public DbSet<Client> Clients { get; set; }
         public DbSet<Expense> Expenses { get; set; }
+        
+        // These were missing and causing your errors:
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<Task> Tasks { get; set; }
+        
+        // New tables for the features we added
+        public DbSet<ClientContact> ClientContacts { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<Document> Documents { get; set; }
+        public DbSet<Message> Messages { get; set; }
     }
 }

@@ -3005,19 +3005,19 @@
     ]
   },
   "packageFolders": {
-    "/Users/saintlucifer/.nuget/packages/": {}
+    "/Users/lucifer/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/saintlucifer/Downloads/CRM/CRM-Project/CrmBackendApi/CrmBackendApi.csproj",
+      "projectUniqueName": "/Users/lucifer/YoursoftdigitalCRM/CrmBackendApi/CrmBackendApi.csproj",
       "projectName": "CrmBackendApi",
-      "projectPath": "/Users/saintlucifer/Downloads/CRM/CRM-Project/CrmBackendApi/CrmBackendApi.csproj",
-      "packagesPath": "/Users/saintlucifer/.nuget/packages/",
-      "outputPath": "/Users/saintlucifer/Downloads/CRM/CRM-Project/CrmBackendApi/obj/",
+      "projectPath": "/Users/lucifer/YoursoftdigitalCRM/CrmBackendApi/CrmBackendApi.csproj",
+      "packagesPath": "/Users/lucifer/.nuget/packages/",
+      "outputPath": "/Users/lucifer/YoursoftdigitalCRM/CrmBackendApi/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/saintlucifer/.nuget/NuGet/NuGet.Config"
+        "/Users/lucifer/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -3040,7 +3040,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net8.0": {
@@ -3084,7 +3085,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.416/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.100/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

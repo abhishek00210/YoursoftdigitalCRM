@@ -3,6 +3,9 @@ using CrmBackendApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+// --- FIX: Give your model a specific name to avoid conflict with System.Threading.Tasks.Task ---
+using CrmTask = CrmBackendApi.Models.Task; 
+
 namespace CrmBackendApi.Controllers
 {
     [ApiController]
@@ -26,7 +29,8 @@ namespace CrmBackendApi.Controllers
 
         // POST: /api/tasks
         [HttpPost]
-        public async Task<IActionResult> AddTask([FromBody] Task newTask)
+        // Use 'CrmTask' here instead of just 'Task'
+        public async Task<IActionResult> AddTask([FromBody] CrmTask newTask)
         {
             if (newTask == null || !ModelState.IsValid)
             {
@@ -45,7 +49,6 @@ namespace CrmBackendApi.Controllers
         }
 
         // PUT: /api/tasks/5/status
-        // Endpoint to quickly change status (for dragging on Kanban board)
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateTaskStatus(int id, [FromBody] string newStatus)
         {
@@ -73,16 +76,3 @@ namespace CrmBackendApi.Controllers
         }
     }
 }
-```
-
-### Step 4: Create Database Migration
-
-1.  **Stop your .NET server** (press `Ctrl+C`).
-2.  **Run these commands** in your `CrmBackendApi` terminal:
-
-```bash
-# 1. Create the migration plan
-dotnet ef migrations add AddProjectsAndTasksTables
-
-# 2. Apply the plan to the database
-dotnet ef database update
