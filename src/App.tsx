@@ -5,6 +5,9 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// Page Imports
+import LandingPage from "./pages/LandingPage"; // <-- New Import
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ProjectsPage from "./pages/Projects";
@@ -31,8 +34,18 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* App Routes */}
-          <Route path="/" element={<Index />} />
+          {/* --- PUBLIC ROUTES --- */}
+          {/* The default route is now the Landing Page */}
+          <Route path="/" element={<LandingPage />} />
+          
+          {/* Auth Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+
+          {/* --- DASHBOARD / APP ROUTES --- */}
+          {/* The main dashboard is moved to /dashboard */}
+          <Route path="/dashboard" element={<Index />} />
+          
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/add" element={<AddProjectPage />} />
           <Route path="/client-list" element={<ClientListPage />} />
@@ -40,17 +53,13 @@ const App = () => (
           <Route path="/client-contact-list" element={<ClientContactListPage />} />
           <Route path="/kanban" element={<KanbanPage />} />
           <Route path="/letterbox" element={<LetterBoxPage />} />
-          <Route path="/filemanager" element={<FileManagerPage />} /> {/* <-- Correct route */}
+          <Route path="/filemanager" element={<FileManagerPage />} />
           <Route path="/bookings" element={<BookingPage />} />
           <Route path="/invoice" element={<InvoicePage />} />
           <Route path="/expenses" element={<ExpensesPage />} />
           <Route path="/employee" element={<EmployeePage />} />
 
-          {/* Auth Routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-
-          {/* Catch-all */}
+          {/* Catch-all for 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

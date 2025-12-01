@@ -1,36 +1,39 @@
-// Program.cs
 using CrmBackendApi.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Add Services
-builder.Services.AddControllers(); // Enable Controllers (API endpoints)
+// 1. Add Controllers (Required for your Login/Signup APIs to work)
+builder.Services.AddControllers();
 
-// 2. Configure Database (SQLite)
-// Ensure your appsettings.json has "ConnectionStrings": { "DefaultConnection": "Data Source=crm.db" }
+// 2. Configure Database
+// Ensure "ConnectionStrings": { "DefaultConnection": "Data Source=crm.db" } is in appsettings.json
 builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=crm.db"));
 
-// 3. Configure CORS (Allows React localhost:5173 to talk to .NET)
+// 3. Configure CORS (Crucial: Allows React to talk to .NET)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173", "http://localhost:5174") // Add your React port here
+            // Allow requests from your React Frontend
+            // We include port 5173 (default) and 5174 (if you have multiple terminals open)
+            policy.WithOrigins("http://localhost:5173", 
+                    "http://localhost:5174", 
+                    "http://localhost:8080")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
 });
 
-// 4. Swagger/OpenAPI (for testing)
+// 4. Add Swagger (Optional, good for testing)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// 5. Configure the HTTP request pipeline
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -39,12 +42,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// 6. Enable CORS
+// 5. Enable CORS (Must be placed BEFORE UseAuthorization)
 app.UseCors("AllowReactApp");
 
 app.UseAuthorization();
 
-// 7. Map Controllers (This makes your API endpoints work)
+// 6. Activate the Controllers
 app.MapControllers();
 
 app.Run();

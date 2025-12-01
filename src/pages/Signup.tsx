@@ -1,5 +1,3 @@
-// src/pages/Signup.tsx
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,63 +10,67 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast"; // <-- Import useToast
-import { Loader2 } from "lucide-react"; // <-- Import loader icon
+import { useToast } from "@/components/ui/use-toast";
+import { Loader2, Eye, EyeOff } from "lucide-react"; // <-- Import Eye icons
 
-// Your .NET API's base URL
-const API_URL = "http://localhost:5123";
+const API_URL = "http://localhost:5011";
 
 const SignupPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // State for form fields
-  // Note: Your backend only accepts email and password.
-  // I've removed the "Full Name" field to match your API.
+  // State
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  
+  // UI State
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // 1. Validation: Passwords match
+    if (password !== confirmPassword) {
+      toast({
+        title: "Passwords do not match",
+        description: "Please make sure your passwords match.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
+      // 2. Send data to backend (updated with names)
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: email,
-          password: password,
+          firstName,
+          lastName,
+          email,
+          password,
         }),
       });
 
-      const data = await response.json();
-
       if (response.ok) {
-        // SUCCESS
-        toast({
-          title: "Account Created",
-          description: "You can now log in.",
-        });
-        navigate("/login"); // Redirect to login page
+        toast({ title: "Account Created", description: "You can now log in." });
+        navigate("/login");
       } else {
-        // ERROR
-        toast({
-          title: "Registration Failed",
-          description: data || "An error occurred.",
-          variant: "destructive",
+        const errorText = await response.text();
+        toast({ 
+            title: "Registration Failed", 
+            description: errorText, 
+            variant: "destructive" 
         });
       }
     } catch (error) {
-      // NETWORK ERROR
-      toast({
-        title: "Error",
-        description: "Could not connect to the server.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Could not connect to server.", variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -78,18 +80,38 @@ const SignupPage = () => {
     <div className="flex min-h-screen w-full items-center justify-center bg-muted/40 p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <div className="mb-4 flex justify-center">
-            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-2xl shadow-lg">
-              C
-            </div>
-          </div>
           <CardTitle className="text-2xl font-bold">Create an Account</CardTitle>
-          <CardDescription>
-            Enter your details below to create your account.
-          </CardDescription>
+          <CardDescription>Enter your details to get started.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignup} className="space-y-4">
+            
+            {/* First Name & Last Name Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input 
+                  id="firstName" 
+                  placeholder="John" 
+                  required 
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input 
+                  id="lastName" 
+                  placeholder="Doe" 
+                  required 
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -102,17 +124,40 @@ const SignupPage = () => {
                 disabled={isLoading}
               />
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Input 
+                  id="password" 
+                  type={showPassword ? "text" : "password"} 
+                  required 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                />
+                <button 
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
               <Input 
-                id="password" 
+                id="confirmPassword" 
                 type="password" 
                 required 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
               />
             </div>
+
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Create Account"}
             </Button>

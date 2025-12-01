@@ -17,14 +17,14 @@ import {
   CalendarDays,
   Receipt,
   Landmark,
-  UserCog // <-- Import new icon
+  UserCog
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // <-- Added useEffect
 import { cn } from "@/lib/utils";
 
 // Updated navigation structure
 const navigationItems = [
-  { title: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { title: "Dashboard", icon: LayoutDashboard, path: "/dashboard" }, // Fixed path
   { 
     title: "Client", 
     icon: Users,
@@ -39,7 +39,7 @@ const navigationItems = [
   { title: "Bookings", icon: CalendarDays, path: "/bookings" },
   { title: "Invoice", icon: Receipt, path: "/invoice" },
   { title: "Expenses", icon: Landmark, path: "/expenses" },
-  { title: "Employee", icon: UserCog, path: "/employee" }, // <-- Added Employee
+  { title: "Employee", icon: UserCog, path: "/employee" },
   { title: "Ecommerce", icon: ShoppingCart, path: "/ecommerce" },
   { title: "Letter Box", icon: Mail, path: "/letterbox" },
   { title: "Chats", icon: MessageSquare, path: "/chats" },
@@ -49,6 +49,42 @@ const navigationItems = [
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [clientSubmenuOpen, setClientSubmenuOpen] = useState(false);
+  
+  // --- NEW: User State ---
+  const [user, setUser] = useState<{ firstName: string; lastName: string } | null>(null);
+
+  // Load user from LocalStorage on mount
+  useEffect(() => {
+    const loadUser = () => {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (e) {
+          console.error("Failed to parse user data");
+        }
+      }
+    };
+
+    loadUser();
+
+    // Listen for storage changes (in case of login/logout in other tabs)
+    window.addEventListener("storage", loadUser);
+    return () => window.removeEventListener("storage", loadUser);
+  }, []);
+
+  // Helper to get initials (e.g., "John Doe" -> "JD")
+  const getInitials = () => {
+    if (!user) return "GU"; // Guest User default
+    const first = user.firstName ? user.firstName[0] : "";
+    const last = user.lastName ? user.lastName[0] : "";
+    return (first + last).toUpperCase();
+  };
+
+  const getFullName = () => {
+    if (!user) return "Guest User";
+    return `${user.firstName} ${user.lastName}`;
+  };
 
   return (
     <aside 
@@ -78,14 +114,15 @@ export function Sidebar() {
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto p-4 space-y-2">
-          <div className="space-y-1">
+            {/* ... (Keep the navigation logic exactly the same as before) ... */}
+            {/* For brevity, I'm pasting the logic back in so you don't lose it */}
+            <div className="space-y-1">
             <p className={cn(
               "text-xs font-semibold text-sidebar-foreground/60 uppercase tracking-wider mb-3",
               collapsed && "hidden"
             )}>
               General
             </p>
-            {/* General section */}
             {navigationItems.slice(0, 2).map((item) => (
               item.submenu ? (
                 <div key={item.title}>
@@ -145,15 +182,11 @@ export function Sidebar() {
               )
             ))}
           </div>
-
+          
           <div className="space-y-1 pt-4">
-            <p className={cn(
-              "text-xs font-semibold text-sidebar-foreground/60 uppercase tracking-wider mb-3",
-              collapsed && "hidden"
-            )}>
+            <p className={cn("text-xs font-semibold text-sidebar-foreground/60 uppercase tracking-wider mb-3", collapsed && "hidden")}>
               Applications
             </p>
-            {/* Applications section */}
             {navigationItems.slice(2).map((item) => (
               <NavLink
                 key={item.path}
@@ -174,16 +207,20 @@ export function Sidebar() {
           </div>
         </nav>
 
-        {/* User Profile */}
+        {/* --- MODIFIED: User Profile Section --- */}
         {!collapsed && (
           <div className="p-4 border-t border-sidebar-border">
             <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent transition-colors cursor-pointer">
               <div className="h-10 w-10 rounded-full bg-gradient-to-br from-accent via-secondary to-primary flex items-center justify-center text-white font-semibold shadow-lg">
-                WW
+                {/* Dynamic Initials */}
+                {getInitials()}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-sidebar-foreground truncate">Wade Warren</p>
-                <p className="text-xs text-sidebar-foreground/60 truncate">UI Designer</p>
+                {/* Dynamic Name */}
+                <p className="text-sm font-medium text-sidebar-foreground truncate">
+                  {getFullName()}
+                </p>
+                {/* Removed the 'UI Designer' p tag, so it shows nothing here */}
               </div>
               <ChevronRight className="h-4 w-4 text-sidebar-foreground/40" />
             </div>

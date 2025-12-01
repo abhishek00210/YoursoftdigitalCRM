@@ -1,5 +1,4 @@
-// Models/User.cs
-using System.ComponentModel.DataAnnotations; // Required for [Required]
+using System.ComponentModel.DataAnnotations;
 
 namespace CrmBackendApi.Models
 {
@@ -8,9 +7,15 @@ namespace CrmBackendApi.Models
         public int Id { get; set; }
 
         [Required]
+        public string FirstName { get; set; } // <-- New
+
+        [Required]
+        public string LastName { get; set; }  // <-- New
+
+        [Required]
         public string Email { get; set; }
 
         [Required]
-        public string PasswordHash { get; set; } // We'll store a hash, not the password
+        public string PasswordHash { get; set; }
     }
 }
