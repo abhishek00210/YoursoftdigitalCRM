@@ -1,5 +1,4 @@
-// src/pages/ClientList.tsx
-
+import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import { 
   Breadcrumb, 
@@ -26,12 +25,6 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -40,114 +33,95 @@ import {
   Star, 
   Plus, 
   FileText, 
-  Search, 
-  ChevronDown, 
-  Pencil,
-  FileDown
+  FileDown,
+  Loader2
 } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // <-- Import useNavigate
+import { useNavigate } from "react-router-dom";
 
-// Dummy data based on the screenshot
-const clientData = [
-  {
-    id: 1,
-    type: "Client",
-    name: "DEVBHBOMI AUXILLARY SERVICES PRIVATE LIMITED",
-    industry: "Other",
-    subIndustry: "other",
-  },
-  {
-    id: 2,
-    type: "Vendor",
-    name: "Ansh Construction",
-    industry: "Other",
-    subIndustry: "other",
-  },
-  // ... other client data ...
-];
+// --- CONFIGURATION ---
+const API_URL = "http://localhost:5011";
+
+// Interface matching your C# Client Model
+interface Client {
+  id: number;
+  type: string;
+  clientName: string;
+  industry: string;
+  subIndustry: string;
+  phone: string;
+}
 
 const ClientListPage = () => {
-  const navigate = useNavigate(); // <-- Initialize navigate
+  const navigate = useNavigate();
+  const [clients, setClients] = useState<Client[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // --- FETCH DATA FROM DB ---
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/clients`);
+        if (response.ok) {
+          const data = await response.json();
+          setClients(data);
+        } else {
+          console.error("Failed to fetch clients");
+        }
+      } catch (error) {
+        console.error("Network error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchClients();
+  }, []);
 
   return (
     <div className="flex min-h-screen w-full bg-background">
       <Sidebar />
       
       <main className="flex-1 ml-64 transition-all duration-300">
-        {/* Header */}
         <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
           <div className="flex h-16 items-center justify-between px-6">
-            <div>
-              {/* Breadcrumb Navigation */}
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Client List</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </div>
-            <div className="flex items-center gap-3">
-              <button className="p-2 rounded-lg hover:bg-muted transition-colors">
-                <Bell className="h-5 w-5 text-muted-foreground" />
-              </button>
-              <button className="p-2 rounded-lg hover:bg-muted transition-colors">
-                <Maximize2 className="h-5 w-5 text-muted-foreground" />
-              </button>
-              <button className="p-2 rounded-lg hover:bg-muted transition-colors">
-                <Star className="h-5 w-5 text-muted-foreground" />
-              </button>
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem><BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink></BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem><BreadcrumbPage>Client List</BreadcrumbPage></BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+             <div className="flex items-center gap-3">
+              <button className="p-2 rounded-lg hover:bg-muted"><Bell className="h-5 w-5 text-muted-foreground" /></button>
               <div className="flex items-center gap-2 pl-3 border-l border-border">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-accent via-secondary to-primary flex items-center justify-center text-white font-semibold shadow-lg">
-                  SA
-                </div>
-                <div className="text-sm">
-                  <p className="font-medium text-foreground">SAdmin</p>
-                  <p className="text-xs text-muted-foreground">Online</p>
-                </div>
+                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white font-semibold">SA</div>
               </div>
             </div>
           </div>
         </header>
 
-        {/* Green Title Bar */}
         <div className="bg-primary text-primary-foreground p-4 m-6 rounded-lg">
           <h1 className="text-lg font-semibold">Client List</h1>
         </div>
 
-        {/* Content */}
         <div className="p-6 pt-0 space-y-6">
           <Card>
             <CardHeader>
-              {/* Toolbar */}
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
-                  {/* --- UPDATED BUTTON --- */}
                   <Button onClick={() => navigate('/client-list/add')}>
                     <Plus className="h-4 w-4 mr-2" />
                     Add Client/Vendor
                   </Button>
                   <Select>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="--Select--" />
-                    </SelectTrigger>
+                    <SelectTrigger className="w-[180px]"><SelectValue placeholder="Filter Type" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="client">Client</SelectItem>
                       <SelectItem value="vendor">Vendor</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button variant="outline">
-                    <FileDown className="h-4 w-4 mr-2" />
-                    Excel
-                  </Button>
-                  <Button variant="outline">
-                    <FileText className="h-4 w-4 mr-2" />
-                    PDF
-                  </Button>
+                  <Button variant="outline"><FileDown className="h-4 w-4 mr-2" /> Excel</Button>
+                  <Button variant="outline"><FileText className="h-4 w-4 mr-2" /> PDF</Button>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">Search:</span>
@@ -156,54 +130,45 @@ const ClientListPage = () => {
               </div>
             </CardHeader>
             <CardContent>
-              {/* Client Table */}
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[80px]">S.No.</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Industry Name</TableHead>
-                    <TableHead>Sub Industry Name</TableHead>
-                    <TableHead className="text-right w-[200px]">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {clientData.map((client) => (
-                    <TableRow key={client.id}>
-                      <TableCell>{client.id}</TableCell>
-                      <TableCell>
-                        <Badge variant={client.type === "Client" ? "default" : "secondary"}>
-                          {client.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{client.name}</TableCell>
-                      <TableCell>{client.industry}</TableCell>
-                      <TableCell>{client.subIndustry}</TableCell>
-                      <TableCell className="flex items-center justify-end gap-2">
-                        <Button variant="outline" size="icon" className="h-8 w-8 bg-green-100 text-green-600 hover:bg-green-200 hover:text-green-700">
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="icon" className="h-8 w-8 bg-orange-100 text-orange-600 hover:bg-orange-200 hover:text-orange-700">
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8">
-                              Action <ChevronDown className="h-4 w-4 ml-2" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                            <DropdownMenuItem>View Details</DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
+              {isLoading ? (
+                <div className="flex justify-center p-10"><Loader2 className="animate-spin" /></div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[80px]">ID</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Industry</TableHead>
+                      <TableHead>Sub Industry</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {clients.map((client) => (
+                      <TableRow key={client.id}>
+                        <TableCell>{client.id}</TableCell>
+                        <TableCell>
+                          <Badge variant={client.type === "Client" ? "default" : "secondary"}>
+                            {client.type}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-medium">{client.clientName}</TableCell>
+                        <TableCell>{client.phone}</TableCell>
+                        <TableCell>{client.industry}</TableCell>
+                        <TableCell>{client.subIndustry}</TableCell>
+                      </TableRow>
+                    ))}
+                    {clients.length === 0 && (
+                      <TableRow>
+                         <TableCell colSpan={6} className="text-center text-muted-foreground h-24">
+                           No clients found. Click "Add Client/Vendor" to create one.
+                         </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </div>

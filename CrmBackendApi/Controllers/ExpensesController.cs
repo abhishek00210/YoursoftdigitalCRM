@@ -18,49 +18,51 @@ namespace CrmBackendApi.Controllers
         }
 
         // GET: /api/expenses
-        // Returns a list of all expenses, ordered by date (newest first)
         [HttpGet]
         public async Task<IActionResult> GetExpenses()
         {
-            var expenses = await _db.Expenses
-                                    .OrderByDescending(e => e.Date)
-                                    .ToListAsync();
+            // Return all expenses ordered by date desc
+            var expenses = await _db.Expenses.OrderByDescending(e => e.Date).ToListAsync();
             return Ok(expenses);
         }
 
-        // POST: /api/expenses
-        // Adds a new expense
-        [HttpPost]
-        public async Task<IActionResult> AddExpense([FromBody] Expense newExpense)
+        // GET: /api/expenses/{id}
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetExpense(int id)
         {
-            if (newExpense == null || !ModelState.IsValid)
+            var expense = await _db.Expenses.FindAsync(id);
+            if (expense == null) return NotFound();
+            return Ok(expense);
+        }
+
+        // POST: /api/expenses
+        [HttpPost]
+        public async Task<IActionResult> CreateExpense([FromBody] Expense expense)
+        {
+            if (expense == null)
+            {
+                return BadRequest("Expense payload is null.");
+            }
+
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            // Add to database
-            _db.Expenses.Add(newExpense);
+            // Ensure date is set if caller didn't supply it
+            if (expense.Date == DateTime.MinValue)
+            {
+                expense.Date = DateTime.UtcNow;
+            }
+
+            _db.Expenses.Add(expense);
             await _db.SaveChangesAsync();
 
-            // Return 201 Created with the new object
-            return CreatedAtAction(nameof(GetExpense), new { id = newExpense.Id }, newExpense);
+            // Return 201 Created and the new expense with Id
+            return CreatedAtAction(nameof(GetExpense), new { id = expense.Id }, expense);
         }
 
-        // GET: /api/expenses/5
-        // Helper endpoint to get a single expense
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetExpense(int id)
-        {
-            var expense = await _db.Expenses.FindAsync(id);
-            if (expense == null)
-            {
-                return NotFound();
-            }
-            return Ok(expense);
-        }
-
-        // GET: /api/expenses/summary
-        // Optional: Returns total expenses calculated on the server
+        // Optionally: GET: /api/expenses/summary
         [HttpGet("summary")]
         public async Task<IActionResult> GetExpenseSummary()
         {
@@ -69,5 +71,3 @@ namespace CrmBackendApi.Controllers
         }
     }
 }
-
-

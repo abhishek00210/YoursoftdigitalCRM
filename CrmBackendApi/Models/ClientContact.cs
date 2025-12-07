@@ -1,4 +1,3 @@
-// Models/ClientContact.cs
 using System.ComponentModel.DataAnnotations;
 
 namespace CrmBackendApi.Models
@@ -11,13 +10,15 @@ namespace CrmBackendApi.Models
         public string Type { get; set; } // "Client" or "Vendor"
 
         [Required]
-        public string ClientName { get; set; } // The company name
+        public string ClientName { get; set; }
 
         [Required]
-        public string ContactPerson { get; set; } // The person's name
+        public string ContactPerson { get; set; }
 
-        public string? Designation { get; set; } // e.g., "CEO", "Manager"
+        public string? Designation { get; set; }
 
-        public string? ContactNo { get; set; } // e.g., Phone number
+        public string? ContactNo { get; set; }
+
+        public string? Email { get; set; } // <-- Added Email field
     }
 }

@@ -1,3 +1,4 @@
+// Controllers/InvoicesController.cs
 using CrmBackendApi.Data;
 using CrmBackendApi.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CrmBackendApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")] // URL: /api/invoices
+    [Route("api/[controller]")] // /api/invoices
     public class InvoicesController : ControllerBase
     {
         private readonly ApiDbContext _db;
@@ -24,19 +25,47 @@ namespace CrmBackendApi.Controllers
             return Ok(invoices);
         }
 
+        // GET: /api/invoices/{id}
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetInvoice(int id)
+        {
+            var invoice = await _db.Invoices.FindAsync(id);
+            if (invoice == null) return NotFound();
+            return Ok(invoice);
+        }
+
         // POST: /api/invoices
         [HttpPost]
-        public async Task<IActionResult> AddInvoice([FromBody] Invoice newInvoice)
+        public async Task<IActionResult> CreateInvoice([FromBody] Invoice invoice)
         {
-            if (newInvoice == null || !ModelState.IsValid)
+            if (invoice == null)
+            {
+                return BadRequest("Invoice payload is null.");
+            }
+
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _db.Invoices.Add(newInvoice);
+            // Ensure date is set if missing
+            if (invoice.Date == DateTime.MinValue)
+            {
+                invoice.Date = DateTime.UtcNow;
+            }
+
+            _db.Invoices.Add(invoice);
             await _db.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetInvoices), new { id = newInvoice.Id }, newInvoice);
+            return CreatedAtAction(nameof(GetInvoice), new { id = invoice.Id }, invoice);
+        }
+
+        // GET: /api/invoices/summary
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetInvoiceSummary()
+        {
+            var total = await _db.Invoices.SumAsync(i => i.Amount);
+            return Ok(new { TotalInvoiced = total });
         }
     }
 }

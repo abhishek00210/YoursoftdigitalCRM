@@ -20,7 +20,9 @@ import LetterBoxPage from "./pages/LetterBoxPage";
 import FileManagerPage from "./pages/FileManager";
 import LoginPage from "./pages/Login";
 import SignupPage from "./pages/Signup";
-import BookingPage from "./pages/Booking";
+import BookingPagesPage from "@/pages/BookingPages";
+import BookingsPage from "@/pages/Bookings";
+import UsersPage from "@/pages/Users";
 import InvoicePage from "./pages/Invoice";
 import ExpensesPage from "./pages/Expenses";
 import EmployeePage from "./pages/Employee";  
@@ -54,10 +56,11 @@ const App = () => (
           <Route path="/kanban" element={<KanbanPage />} />
           <Route path="/letterbox" element={<LetterBoxPage />} />
           <Route path="/filemanager" element={<FileManagerPage />} />
-          <Route path="/bookings" element={<BookingPage />} />
+          <Route path="/booking-pages" element={<BookingPagesPage />} />
           <Route path="/invoice" element={<InvoicePage />} />
           <Route path="/expenses" element={<ExpensesPage />} />
           <Route path="/employee" element={<EmployeePage />} />
+          <Route path="/bookings" element={<BookingsPage />} />
 
           {/* Catch-all for 404 */}
           <Route path="*" element={<NotFound />} />

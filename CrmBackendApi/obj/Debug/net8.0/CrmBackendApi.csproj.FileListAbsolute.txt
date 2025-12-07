@@ -128,3 +128,4 @@
 /Users/lucifer/YoursoftdigitalCRM/CrmBackendApi/obj/Debug/net8.0/CrmBackendApi.pdb
 /Users/lucifer/YoursoftdigitalCRM/CrmBackendApi/obj/Debug/net8.0/CrmBackendApi.genruntimeconfig.cache
 /Users/lucifer/YoursoftdigitalCRM/CrmBackendApi/obj/Debug/net8.0/ref/CrmBackendApi.dll
+/Users/lucifer/YoursoftdigitalCRM/CrmBackendApi/bin/Debug/net8.0/kanban-db.json

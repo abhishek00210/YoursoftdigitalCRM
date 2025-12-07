@@ -17,6 +17,7 @@ namespace CrmBackendApi.Data
         public DbSet<Employee> Employees { get; set; }
         public DbSet<User> Users { get; set; } 
         public DbSet<Client> Clients { get; set; }
+        public DbSet<EventType> EventTypes { get; set; } 
         public DbSet<Expense> Expenses { get; set; }
         
         // These were missing and causing your errors:
@@ -29,5 +30,9 @@ namespace CrmBackendApi.Data
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<Message> Messages { get; set; }
+         public DbSet<FileRecord> Files { get; set; } 
+         public DbSet<UserSimple> UsersSimple { get; set; }
+         public DbSet<BookingPage> BookingPages { get; set; }
+        
     }
 }

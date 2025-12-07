@@ -1,215 +1,255 @@
-// src/pages/Invoice.tsx
-
+// src/pages/Invoices.tsx
+import React, { useEffect, useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
-import { 
-  Breadcrumb, 
-  BreadcrumbItem, 
-  BreadcrumbLink, 
-  BreadcrumbList, 
-  BreadcrumbPage, 
-  BreadcrumbSeparator 
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Bell, 
-  Maximize2, 
-  Star, 
-  Plus, 
-  Search, 
-  ChevronDown, 
-  FileDown,
-  Printer
-} from "lucide-react";
+import { Plus } from "lucide-react";
 
-// Dummy data for invoices
-const invoiceData = [
-  {
-    id: "INV-001",
-    client: "DEVBHBOMI AUXILLARY",
-    date: "2025-10-28",
-    status: "Paid",
-    amount: "$1,200.00",
-  },
-  {
-    id: "INV-002",
-    client: "Ansh Construction",
-    date: "2025-10-25",
-    status: "Pending",
-    amount: "$850.00",
-  },
-  {
-    id: "INV-003",
-    client: "M/s ACCENTOR ENTERPRISES",
-    date: "2025-10-22",
-    status: "Paid",
-    amount: "$3,500.00",
-  },
-  {
-    id: "INV-004",
-    client: "Harsh Sharma",
-    date: "2025-10-20",
-    status: "Overdue",
-    amount: "$450.00",
-  },
-];
+// NOTE: AddInvoiceDialog in your project is likely a named export (like AddExpenseDialog).
+// Keep this import as named — if your component uses default export, change accordingly.
+import { AddInvoiceDialog } from "@/components/invoices/AddInvoiceDialog";
 
-const getStatusBadgeVariant = (status: string) => {
-  switch (status) {
-    case "Paid":
-      return "default";
-    case "Pending":
-      return "secondary";
-    case "Overdue":
-      return "destructive";
-    default:
-      return "outline";
-  }
+type InvoiceType = {
+  id?: number | string;
+  Id?: number | string;
+  InvoiceNumber?: string;
+  invoiceNumber?: string;
+  Client?: string;
+  client?: string;
+  Amount?: number;
+  amount?: number;
+  Date?: string;
+  date?: string;
+  Status?: string;
+  status?: string;
 };
 
-const InvoicePage = () => {
+const apiBase = "/api/invoices";
+
+/** Safe response parser (reads text first, checks content-type) */
+async function parseResponse(res: Response) {
+  const ct = res.headers.get("content-type") || "";
+  const text = await res.text();
+
+  if (
+    ct.includes("application/json") ||
+    text.trim().startsWith("{") ||
+    text.trim().startsWith("[")
+  ) {
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      throw new Error(
+        `Failed to parse JSON response: ${(e as Error).message}. Raw response:\n${text}`
+      );
+    }
+  }
+
+  throw new Error(
+    `Expected JSON response but got content-type="${ct}". Body:\n${text}`
+  );
+}
+
+const InvoicesPage: React.FC = () => {
+  const [invoices, setInvoices] = useState<InvoiceType[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Fetch invoices on mount
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await fetch(apiBase, { method: "GET" });
+
+        if (!res.ok) {
+          try {
+            const body = await parseResponse(res);
+            throw new Error(
+              `HTTP ${res.status} ${res.statusText}: ${JSON.stringify(body)}`
+            );
+          } catch (inner: any) {
+            throw new Error(
+              `HTTP ${res.status} ${res.statusText} - ${inner.message}`
+            );
+          }
+        }
+
+        const data = await parseResponse(res);
+        if (!mounted) return;
+        setInvoices(Array.isArray(data) ? data : []);
+      } catch (err: any) {
+        console.error("Fetch invoices error:", err);
+        setError(err?.message ?? String(err));
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Add invoice (POST) and update UI
+  const handleAddInvoice = async (invoice: any) => {
+    try {
+      const payload = {
+        InvoiceNumber: invoice.invoiceNumber ?? invoice.InvoiceNumber ?? "",
+        Client: invoice.client ?? invoice.Client ?? "",
+        Amount: Number(invoice.amount ?? invoice.Amount ?? 0),
+        Date: invoice.date ?? invoice.Date ?? new Date().toISOString(),
+        Status: invoice.status ?? invoice.Status ?? "Unpaid",
+      };
+
+      const res = await fetch(apiBase, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        try {
+          const body = await parseResponse(res);
+          throw new Error(
+            `Server returned ${res.status} ${res.statusText}: ${JSON.stringify(
+              body
+            )}`
+          );
+        } catch (inner: any) {
+          throw new Error(
+            `Server returned ${res.status} ${res.statusText} - ${inner.message}`
+          );
+        }
+      }
+
+      const created = await parseResponse(res);
+      setInvoices((prev) => [created, ...prev]);
+      setIsDialogOpen(false);
+    } catch (err: any) {
+      console.error("Failed to create invoice", err);
+      alert("Failed to save invoice: " + (err.message || String(err)));
+    }
+  };
+
   return (
     <div className="flex min-h-screen w-full bg-background">
       <Sidebar />
-      
+
       <main className="flex-1 ml-64 transition-all duration-300">
         {/* Header */}
-        <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
-          <div className="flex h-16 items-center justify-between px-6">
+        <header className="sticky top-0 z-30 border-b bg-card/95 p-4">
+          <div className="flex items-center justify-between">
             <div>
-              {/* Breadcrumb Navigation */}
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                    <BreadcrumbLink href="/">Home</BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <BreadcrumbPage>Invoice</BreadcrumbPage>
+                    <BreadcrumbPage>Invoices</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
+              <h1 className="text-2xl font-semibold mt-2">Invoices</h1>
             </div>
+
             <div className="flex items-center gap-3">
-              <button className="p-2 rounded-lg hover:bg-muted transition-colors">
-                <Bell className="h-5 w-5 text-muted-foreground" />
-              </button>
-              <button className="p-2 rounded-lg hover:bg-muted transition-colors">
-                <Maximize2 className="h-5 w-5 text-muted-foreground" />
-              </button>
-              <button className="p-2 rounded-lg hover:bg-muted transition-colors">
-                <Star className="h-5 w-5 text-muted-foreground" />
-              </button>
-              <div className="flex items-center gap-2 pl-3 border-l border-border">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-accent via-secondary to-primary flex items-center justify-center text-white font-semibold shadow-lg">
-                  SA
-                </div>
-                <div className="text-sm">
-                  <p className="font-medium text-foreground">SAdmin</p>
-                  <p className="text-xs text-muted-foreground">Online</p>
-                </div>
-              </div>
+              <Button onClick={() => setIsDialogOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Invoice
+              </Button>
             </div>
           </div>
         </header>
 
-        {/* Green Title Bar */}
-        <div className="bg-primary text-primary-foreground p-4 m-6 rounded-lg">
-          <h1 className="text-lg font-semibold">Invoice List</h1>
-        </div>
-
-        {/* Content */}
-        <div className="p-6 pt-0 space-y-6">
+        <div className="p-6">
           <Card>
             <CardHeader>
-              {/* Toolbar */}
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Invoice
-                  </Button>
-                  <Button variant="outline">
-                    <Printer className="h-4 w-4 mr-2" />
-                    Print
-                  </Button>
-                  <Button variant="outline">
-                    <FileDown className="h-4 w-4 mr-2" />
-                    Export
-                  </Button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Search:</span>
-                  <Input type="search" className="w-[250px]" />
-                </div>
-              </div>
+              <CardTitle>Invoices</CardTitle>
+              <CardDescription>All invoices</CardDescription>
             </CardHeader>
             <CardContent>
-              {/* Invoice Table */}
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[120px]">Invoice ID</TableHead>
-                    <TableHead>Client</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead className="text-right w-[100px]">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {invoiceData.map((invoice) => (
-                    <TableRow key={invoice.id}>
-                      <TableCell className="font-medium">{invoice.id}</TableCell>
-                      <TableCell>{invoice.client}</TableCell>
-                      <TableCell>{invoice.date}</TableCell>
-                      <TableCell>
-                        <Badge variant={getStatusBadgeVariant(invoice.status)}>
-                          {invoice.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{invoice.amount}</TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <ChevronDown className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem>View</DropdownMenuItem>
-                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                            <DropdownMenuItem>Download PDF</DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              {loading ? (
+                <div className="py-8 text-center">Loading invoices…</div>
+              ) : error ? (
+                <div className="text-red-600 py-4">Error: {error}</div>
+              ) : (
+                <>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Invoice #</TableHead>
+                        <TableHead>Client</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {invoices.map((inv: InvoiceType, idx) => {
+                        const id = inv.id ?? inv.Id ?? idx;
+                        const num = inv.invoiceNumber ?? inv.InvoiceNumber ?? "-";
+                        const client = inv.client ?? inv.Client ?? "-";
+                        const date = inv.date ?? inv.Date ?? "";
+                        const status = inv.status ?? inv.Status ?? "-";
+                        const amount = inv.amount ?? inv.Amount ?? 0;
+                        return (
+                          <TableRow key={String(id)}>
+                            <TableCell className="font-medium">{num}</TableCell>
+                            <TableCell>{client}</TableCell>
+                            <TableCell>
+                              {date ? new Date(date).toLocaleDateString() : "-"}
+                            </TableCell>
+                            <TableCell>{status}</TableCell>
+                            <TableCell className="text-right">
+                              ₹{Number(amount).toFixed(2)}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
       </main>
+
+      <AddInvoiceDialog
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onInvoiceCreate={handleAddInvoice}
+      />
     </div>
   );
 };
 
-export default InvoicePage;
+export default InvoicesPage;

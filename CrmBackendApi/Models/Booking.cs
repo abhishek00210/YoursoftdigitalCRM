@@ -1,22 +1,25 @@
-using System.ComponentModel.DataAnnotations;
+namespace CrmBackendApi.Models;
 
-namespace CrmBackendApi.Models
+public class Booking
 {
-    public class Booking
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
+    public string BookingId { get; set; } = ""; // e.g. ZY-00001
+    public int EventTypeId { get; set; }
+    public EventType? EventType { get; set; }
 
-        [Required]
-        public string ClientName { get; set; }
+    // resource / host user id
+    public int? HostUserId { get; set; }
 
-        [Required]
-        public DateTime Date { get; set; }
+    // customer details (simple)
+    public string CustomerName { get; set; } = "";
+    public string CustomerEmail { get; set; } = "";
+    public string CustomerPhone { get; set; } = "";
 
-        [Required]
-        public string Time { get; set; }
+    public DateTime StartAt { get; set; }
+    public DateTime EndAt { get; set; }
 
-        public string? Notes { get; set; }
-        
-        public string Type { get; set; } = "Meeting";
-    }
+    public string PaymentStatus { get; set; } = "Free"; // Free | Paid | Pending
+    public string Status { get; set; } = "Upcoming"; // Upcoming | Completed | Cancelled | NoShow
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

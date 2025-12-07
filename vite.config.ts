@@ -8,7 +8,15 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
 
-    // 👇 ADD THIS
+    // Add this proxy section 👇👇👇
+    proxy: {
+      "/api": {
+        target: "http://localhost:5011", // your backend
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+
     allowedHosts: [
       "63e2a783-f40f-4008-b9fb-51a1239414b4-00-10gdgnkdug5zu.worf.replit.dev",
       "localhost",

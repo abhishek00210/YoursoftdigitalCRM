@@ -1,5 +1,6 @@
 using CrmBackendApi.Data;
 using Microsoft.EntityFrameworkCore;
+using CrmBackendApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,7 @@ builder.Services.AddCors(options =>
 });
 
 // 4. Add Swagger (Optional, good for testing)
+builder.Services.AddSingleton<IKanbanStore, JsonFileKanbanStore>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -46,7 +48,7 @@ app.UseHttpsRedirection();
 app.UseCors("AllowReactApp");
 
 app.UseAuthorization();
-
+app.UseStaticFiles();
 // 6. Activate the Controllers
 app.MapControllers();
 

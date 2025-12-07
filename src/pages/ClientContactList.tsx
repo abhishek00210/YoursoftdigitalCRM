@@ -1,240 +1,139 @@
 // src/pages/ClientContactList.tsx
-
+import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
-import { 
-  Breadcrumb, 
-  BreadcrumbItem, 
-  BreadcrumbLink, 
-  BreadcrumbList, 
-  BreadcrumbPage, 
-  BreadcrumbSeparator 
-} from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Bell, 
-  Maximize2, 
-  Star, 
-  Pencil,
-  Trash2,
-  Phone
-} from "lucide-react";
+import { Bell, Loader2, Pencil, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-// Dummy data based on the screenshot
-const contactData = [
-  {
-    id: 1,
-    type: "Client",
-    clientName: "Harsh Sharma",
-    contactPerson: "Harsh Sharma",
-    designation: "CEO",
-    contactNo: "N/A",
-  },
-  {
-    id: 2,
-    type: "Client",
-    clientName: "Harsh Sharma",
-    contactPerson: "Dr. venugopal jhanvar",
-    designation: "",
-    contactNo: "N/A",
-  },
-  {
-    id: 3,
-    type: "Vendor",
-    clientName: "Hostinger",
-    contactPerson: "Rajesh",
-    designation: "",
-    contactNo: "N/A",
-  },
-  {
-    id: 4,
-    type: "Vendor",
-    clientName: "Ashish Ent",
-    contactPerson: "Anurag Mohanti",
-    designation: "Deputy Director",
-    contactNo: "N/A",
-  },
-  {
-    id: 5,
-    type: "Client",
-    clientName: "Ravi Kumar",
-    contactPerson: "Ravi Kumar",
-    designation: "Residential",
-    contactNo: "N/A",
-  },
-  {
-    id: 6,
-    type: "Client",
-    clientName: "Ravi Kumar",
-    contactPerson: "Vinod",
-    designation: "",
-    contactNo: "N/A",
-  },
-  {
-    id: 7,
-    type: "Client",
-    clientName: "EcoMall India",
-    contactPerson: "Mr. Vikas Malhotra",
-    designation: "",
-    contactNo: "N/A",
-  },
-  {
-    id: 8,
-    type: "Client",
-    clientName: "She Creation",
-    contactPerson: "Hurria",
-    designation: "",
-    contactNo: "N/A",
-  },
-  {
-    id: 9,
-    type: "Client",
-    clientName: "IAIT",
-    contactPerson: "Deepa",
-    designation: "Admin",
-    contactNo: "N/A",
-  },
-  {
-    id: 10,
-    type: "Client",
-    clientName: "IAIT",
-    contactPerson: "KK Verma",
-    designation: "Director",
-    contactNo: "N/A",
-  },
-];
+const API_URL = "http://localhost:5011";
+
+interface Client {
+  id: number;
+  type: string;
+  clientName: string;
+  contactPerson?: string;
+  designation?: string;
+  contactEmail?: string;
+  contactNo?: string;
+}
 
 const ClientContactListPage = () => {
+  const [contacts, setContacts] = useState<Client[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/clients`);
+        if (!response.ok) {
+          const errText = await response.text();
+          console.error("GET /api/clients failed:", response.status, errText);
+          setContacts([]);
+          return;
+        }
+
+        const data = await response.json();
+
+        const mapped = (data || []).map((c: any) => ({
+          id: c.id ?? c.Id ?? 0,
+          type: c.type ?? c.Type ?? "Client",
+          clientName: c.clientName ?? c.ClientName ?? c.name ?? c.Name ?? "",
+          contactPerson: (c.contactPerson ?? c.ContactPerson ?? "") as string,
+          designation: c.designation ?? c.Designation ?? "",
+          contactEmail: c.contactEmail ?? c.ContactEmail ?? c.email ?? c.Email ?? "",
+          contactNo: c.contactNo ?? c.ContactNo ?? c.phone ?? c.Phone ?? "",
+        }));
+
+        // Keep all clients (you wanted to fetch whatever client you add)
+        setContacts(mapped);
+      } catch (error) {
+        console.error("Network error while fetching clients:", error);
+        setContacts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchContacts();
+  }, []);
+
   return (
     <div className="flex min-h-screen w-full bg-background">
       <Sidebar />
-      
       <main className="flex-1 ml-64 transition-all duration-300">
-        {/* Header */}
-        <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
-          <div className="flex h-16 items-center justify-between px-6">
-            <div>
-              {/* Breadcrumb Navigation */}
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Client Contact List</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </div>
-            <div className="flex items-center gap-3">
-              <button className="p-2 rounded-lg hover:bg-muted transition-colors">
-                <Bell className="h-5 w-5 text-muted-foreground" />
-              </button>
-              <button className="p-2 rounded-lg hover:bg-muted transition-colors">
-                <Maximize2 className="h-5 w-5 text-muted-foreground" />
-              </button>
-              <button className="p-2 rounded-lg hover:bg-muted transition-colors">
-                <Star className="h-5 w-5 text-muted-foreground" />
-              </button>
-              <div className="flex items-center gap-2 pl-3 border-l border-border">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-accent via-secondary to-primary flex items-center justify-center text-white font-semibold shadow-lg">
-                  SA
-                </div>
-                <div className="text-sm">
-                  <p className="font-medium text-foreground">SAdmin</p>
-                  <p className="text-xs text-muted-foreground">Online</p>
-                </div>
-              </div>
-            </div>
+        <header className="sticky top-0 z-30 border-b border-border/5 bg-background/95 backdrop-blur flex h-16 items-center justify-between px-6">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem><BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink></BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem><BreadcrumbPage>Client Contact List</BreadcrumbPage></BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+
+          <div className="flex items-center gap-3">
+            <button className="p-2 rounded-lg hover:bg-muted"><Bell className="h-5 w-5 text-muted-foreground" /></button>
           </div>
         </header>
 
-        {/* Green Title Bar */}
-        <div className="bg-primary text-primary-foreground p-4 m-6 rounded-lg">
-          <h1 className="text-lg font-semibold">Client Contact List</h1>
-        </div>
-
-        {/* Content */}
-        <div className="p-6 pt-0 space-y-6">
+        <div className="p-6">
           <Card>
             <CardHeader>
-              {/* Toolbar */}
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Client/Vendor</span>
-                  <Select>
-                    <SelectTrigger className="w-[250px]">
-                      <SelectValue placeholder="--Select--" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="client">Client</SelectItem>
-                      <SelectItem value="vendor">Vendor</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Search:</span>
-                  <Input type="search" className="w-[250px]" />
-                </div>
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold">Client Contacts</h2>
+                <Input type="search" placeholder="Search..." className="w-[250px]" />
               </div>
             </CardHeader>
+
             <CardContent>
-              {/* Client Contact Table */}
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[80px]">S.No.</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Client Name</TableHead>
-                    <TableHead>Contact Person</TableHead>
-                    <TableHead>Designation</TableHead>
-                    <TableHead>Contact No</TableHead>
-                    <TableHead className="text-right w-[150px]">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {contactData.map((contact) => (
-                    <TableRow key={contact.id}>
-                      <TableCell>{contact.id}</TableCell>
-                      <TableCell>
-                        <Badge variant={contact.type === "Client" ? "default" : "secondary"}>
-                          {contact.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{contact.clientName}</TableCell>
-                      <TableCell>{contact.contactPerson}</TableCell>
-                      <TableCell>{contact.designation}</TableCell>
-                      <TableCell>{contact.contactNo}</TableCell>
-                      <TableCell className="flex items-center justify-end gap-2">
-                        <Button variant="outline" size="icon" className="h-8 w-8 bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="icon" className="h-8 w-8 bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-700">
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
+              {isLoading ? (
+                <div className="flex justify-center p-10"><Loader2 className="animate-spin" /></div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Client Name</TableHead>
+                      <TableHead>Contact Person</TableHead>
+                      <TableHead>Designation</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Contact No</TableHead>
+                      <TableHead>Action</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+
+                  <TableBody>
+                    {contacts.map((contact) => (
+                      <TableRow key={contact.id}>
+                        <TableCell>
+                          <Badge variant={contact.type === "Client" ? "default" : "secondary"}>
+                            {contact.type}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-medium">{contact.clientName}</TableCell>
+                        <TableCell>{contact.contactPerson || "-"}</TableCell>
+                        <TableCell>{contact.designation || "-"}</TableCell>
+                        <TableCell>{contact.contactEmail || "-"}</TableCell>
+                        <TableCell>{contact.contactNo || "-"}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="ghost" size="icon"><Pencil className="h-4 w-4" /></Button>
+                            <Button variant="ghost" size="icon" className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {contacts.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center py-8">No clients found.</TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </div>

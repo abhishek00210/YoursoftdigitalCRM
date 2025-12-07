@@ -53,7 +53,6 @@ namespace CrmBackendApi.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ClientName")
@@ -63,10 +62,22 @@ namespace CrmBackendApi.Migrations
                     b.Property<string>("ClientSource")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ContactEmail")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactNo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactPerson")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Country")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CustomerPriority")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Designation")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Facebook")
@@ -76,7 +87,6 @@ namespace CrmBackendApi.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Industry")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Linkedin")
@@ -93,7 +103,6 @@ namespace CrmBackendApi.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("State")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StateNo")
@@ -103,7 +112,6 @@ namespace CrmBackendApi.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SubIndustry")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Twitter")
@@ -139,6 +147,9 @@ namespace CrmBackendApi.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Designation")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Type")
@@ -233,6 +244,38 @@ namespace CrmBackendApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Expenses");
+                });
+
+            modelBuilder.Entity("CrmBackendApi.Models.FileRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("OriginalName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("StoredName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UploadedBy")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Files");
                 });
 
             modelBuilder.Entity("CrmBackendApi.Models.Invoice", b =>
