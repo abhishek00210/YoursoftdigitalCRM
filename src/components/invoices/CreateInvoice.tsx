@@ -81,7 +81,7 @@ export default function CreateInvoice() {
         }))
       };
 
-      const response = await fetch('http://localhost:5011/api/invoices', {
+      const response = await fetch('https://crm.yoursoftdigital.ca/api/invoices', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(apiPayload)

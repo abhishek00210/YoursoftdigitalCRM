@@ -24,7 +24,7 @@ export default function InvoiceList() {
   }, []);
 
   const fetchInvoices = () => {
-    fetch('http://localhost:5011/api/invoices')
+    fetch('https://crm.yoursoftdigital.ca/api/invoices')
       .then(res => res.json())
       .then(data => setInvoices(data))
       .catch(err => console.error('Failed to load invoices', err));
@@ -42,7 +42,7 @@ export default function InvoiceList() {
     if (!confirm("Are you sure you want to delete this invoice?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5011/api/invoices/${id}`, {
+      const res = await fetch(`https://crm.yoursoftdigital.ca/api/invoices/${id}`, {
         method: 'DELETE',
       });
 

@@ -70,7 +70,7 @@ export default function InvoiceForm() {
       };
 
       // 2. Send to Backend
-      const response = await fetch('http://localhost:5000/api/invoices', {
+      const response = await fetch('https://crm.yoursoftdigital.ca/api/invoices', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
