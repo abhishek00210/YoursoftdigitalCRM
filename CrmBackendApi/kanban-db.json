@@ -5,17 +5,6 @@
       "Title": "To Do",
       "Tasks": [
         {
-          "Id": "task-1765101685388",
-          "Title": "wkfnw",
-          "Description": "klnewlrn",
-          "Status": "todo",
-          "Tags": [
-            "wfwefwe"
-          ],
-          "Assignee": null,
-          "CreatedAt": "2025-12-07T10:01:25.388074Z"
-        },
-        {
           "Id": "task-1765101675053",
           "Title": "wkemfkl",
           "Description": "klwneflk",
@@ -25,35 +14,36 @@
           ],
           "Assignee": null,
           "CreatedAt": "2025-12-07T10:01:15.053454Z"
-        },
-        {
-          "Id": "task-1765101658047",
-          "Title": "a",
-          "Description": "b",
-          "Status": "todo",
-          "Tags": [
-            "jdf"
-          ],
-          "Assignee": null,
-          "CreatedAt": "2025-12-07T10:00:58.047631Z"
-        },
-        {
-          "Id": "task-1765101520388",
-          "Title": "curl-task",
-          "Description": "from curl",
-          "Status": "todo",
-          "Tags": [
-            "x"
-          ],
-          "Assignee": null,
-          "CreatedAt": "2025-12-07T09:58:40.390962Z"
         }
       ]
     },
     {
       "Id": "in-progress",
       "Title": "In Progress",
-      "Tasks": []
+      "Tasks": [
+        {
+          "Id": "task-1765101520388",
+          "Title": "curl-task",
+          "Description": "from curl",
+          "Status": "in-progress",
+          "Tags": [
+            "x"
+          ],
+          "Assignee": null,
+          "CreatedAt": "2025-12-07T09:58:40.390962Z"
+        },
+        {
+          "Id": "task-1765101658047",
+          "Title": "a",
+          "Description": "b",
+          "Status": "in-progress",
+          "Tags": [
+            "jdf"
+          ],
+          "Assignee": null,
+          "CreatedAt": "2025-12-07T10:00:58.047631Z"
+        }
+      ]
     },
     {
       "Id": "review",
@@ -64,6 +54,17 @@
       "Id": "done",
       "Title": "Done",
       "Tasks": [
+        {
+          "Id": "task-1765101685388",
+          "Title": "wkfnw",
+          "Description": "klnewlrn",
+          "Status": "done",
+          "Tags": [
+            "wfwefwe"
+          ],
+          "Assignee": null,
+          "CreatedAt": "2025-12-07T10:01:25.388074Z"
+        },
         {
           "Id": "task-1765101667221",
           "Title": "fkwfk",

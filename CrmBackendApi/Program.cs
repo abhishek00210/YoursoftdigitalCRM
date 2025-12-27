@@ -1,41 +1,47 @@
 using CrmBackendApi.Data;
-using Microsoft.EntityFrameworkCore;
 using CrmBackendApi.Services;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Add Controllers (Required for your Login/Signup APIs to work)
-builder.Services.AddControllers();
+// 1️⃣ Add Controllers + FIX circular reference issue (🔥 REQUIRED)
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles
+);
 
-// 2. Configure Database
-// Ensure "ConnectionStrings": { "DefaultConnection": "Data Source=crm.db" } is in appsettings.json
+// 2️⃣ Configure Database (SQLite)
 builder.Services.AddDbContext<ApiDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=crm.db"));
+    options.UseSqlite(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? "Data Source=crm.db"
+    )
+);
 
-// 3. Configure CORS (Crucial: Allows React to talk to .NET)
+// 3️⃣ Configure CORS (React ↔ .NET)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp",
-        policy =>
-        {
-            // Allow requests from your React Frontend
-            // We include port 5173 (default) and 5174 (if you have multiple terminals open)
-            policy.WithOrigins("http://localhost:5173", 
-                    "http://localhost:5174", 
-                    "http://localhost:8080")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "http://localhost:8080"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
 
-// 4. Add Swagger (Optional, good for testing)
+// 4️⃣ Swagger
 builder.Services.AddSingleton<IKanbanStore, JsonFileKanbanStore>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// 5️⃣ Middleware pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -44,12 +50,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// 5. Enable CORS (Must be placed BEFORE UseAuthorization)
 app.UseCors("AllowReactApp");
 
 app.UseAuthorization();
+
 app.UseStaticFiles();
-// 6. Activate the Controllers
+
+// 6️⃣ Map Controllers (🔥 REQUIRED)
 app.MapControllers();
 
 app.Run();

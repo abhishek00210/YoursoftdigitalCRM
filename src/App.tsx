@@ -6,8 +6,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+// Layout
+import Layout from "./components/Layout";
+
 // Page Imports
-import LandingPage from "./pages/LandingPage"; // <-- New Import
+import LandingPage from "./pages/LandingPage";
+import InvoiceList from "./components/invoices/InvoiceList";
+import CreateInvoice from "./components/invoices/CreateInvoice";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ProjectsPage from "./pages/Projects";
@@ -37,17 +42,13 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           {/* --- PUBLIC ROUTES --- */}
-          {/* The default route is now the Landing Page */}
           <Route path="/" element={<LandingPage />} />
-          
-          {/* Auth Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
 
-          {/* --- DASHBOARD / APP ROUTES --- */}
-          {/* The main dashboard is moved to /dashboard */}
+          {/* --- EXISTING ROUTES (Self-Contained Layouts) --- */}
+          {/* These pages handle their own Sidebar/Layout, so we do NOT wrap them in <Layout> to avoid double margins */}
           <Route path="/dashboard" element={<Index />} />
-          
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/add" element={<AddProjectPage />} />
           <Route path="/client-list" element={<ClientListPage />} />
@@ -57,10 +58,18 @@ const App = () => (
           <Route path="/letterbox" element={<LetterBoxPage />} />
           <Route path="/filemanager" element={<FileManagerPage />} />
           <Route path="/booking-pages" element={<BookingPagesPage />} />
+          <Route path="/bookings" element={<BookingsPage />} />
           <Route path="/invoice" element={<InvoicePage />} />
           <Route path="/expenses" element={<ExpensesPage />} />
           <Route path="/employee" element={<EmployeePage />} />
-          <Route path="/bookings" element={<BookingsPage />} />
+          <Route path="/users" element={<UsersPage />} />
+
+          {/* --- NEW INVOICE ROUTES (Wrapped in Layout) --- */}
+          {/* These are the new pages we built, which need the Sidebar and Header wrapper */}
+          <Route element={<Layout />}>
+            <Route path="/invoices" element={<InvoiceList />} /> 
+            <Route path="/invoices/create" element={<CreateInvoice />} />
+          </Route>
 
           {/* Catch-all for 404 */}
           <Route path="*" element={<NotFound />} />

@@ -1,7 +1,7 @@
 // Data/ApiDbContext.cs
 using CrmBackendApi.Models; 
 using Microsoft.EntityFrameworkCore;
-// We alias Task to avoid conflict with System.Threading.Tasks
+
 using Task = CrmBackendApi.Models.Task; 
 
 namespace CrmBackendApi.Data
@@ -19,7 +19,9 @@ namespace CrmBackendApi.Data
         public DbSet<Client> Clients { get; set; }
         public DbSet<EventType> EventTypes { get; set; } 
         public DbSet<Expense> Expenses { get; set; }
-        
+        public DbSet<Service> Services { get; set; }
+       public DbSet<Provider> Providers { get; set; }
+       
         // These were missing and causing your errors:
         public DbSet<Project> Projects { get; set; }
         public DbSet<Task> Tasks { get; set; }
